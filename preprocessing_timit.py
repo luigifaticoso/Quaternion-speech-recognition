@@ -1,6 +1,7 @@
 import os, sys
 from shutil import copy
 # Open a file
+os.makedirs("preprocessed_files")
 preprocessed_path = path = os.path.abspath("preprocessed_files")
 path = os.path.abspath("TRAIN")
 dirs = os.listdir( path )
