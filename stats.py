@@ -9,7 +9,7 @@ duration = []
 phoneme_duration = {}
 phoneme_duration_STD = {}
 somma = 0
-deviations_list = []
+deviations = []
 dict_average = 0
 for i in dirs:
     if i.split(".")[1] == "PHN":
@@ -37,11 +37,11 @@ dict_average = somma/len(phoneme_duration)
 
 for e in phoneme_duration_STD:
     std_temp = np.std(np.array(phoneme_duration_STD[e]))
-    deviations_list.append[int(std_temp)]
+    deviations.append([int(std_temp)])
 
-stand_dev = np.std(np.array(deviations_list)) 
+stand_dev = np.std(np.array(deviations)) 
 
-# stand_dev = np.std(np.array(duration))  
+stand_dev = np.std(np.array(duration))  
 print(f"Durata media pesata in base alla frequenza di ogni fonema: {int(dict_average)}")
 print(f"Durata media di tutti i fonemi: {int(sum(duration)/len(duration))}")
 print(f"Durata media di tutte le frasi: {int(sum(sentence_duration)/len(sentence_duration))}")
