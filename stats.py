@@ -41,7 +41,6 @@ for e in phoneme_duration_STD:
 
 stand_dev = np.std(np.array(deviations)) 
 
-stand_dev = np.std(np.array(duration))  
 print(f"Durata media pesata in base alla frequenza di ogni fonema: {int(dict_average)}")
 print(f"Durata media di tutti i fonemi: {int(sum(duration)/len(duration))}")
 print(f"Durata media di tutte le frasi: {int(sum(sentence_duration)/len(sentence_duration))}")
