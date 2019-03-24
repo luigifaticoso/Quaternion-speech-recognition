@@ -1,4 +1,5 @@
 import os
+import shutil
 import numpy as np
 from scikits.audiolab import Sndfile
 import python_speech_features as sf
@@ -36,6 +37,11 @@ if __name__ == '__main__':
 	#number of elements for each set of quaternions
 	N_SPLIT = 100
 
+	dir_name = "Quaternion_" + str(N_SPLIT)
+	tree = "/home/franci/Desktop/NN/Quaternion-speech-recognition/" + dir_name
+
+	if os.path.isdir(tree):
+		shutil.rmtree(tree)
 
 	os.makedirs("Quaternion_" + str(N_SPLIT))
 	path_to_quats = os.path.abspath("Quaternion_" + str(N_SPLIT))
