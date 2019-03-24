@@ -11,6 +11,9 @@ phoneme_duration_STD = {}
 somma = 0
 deviations = []
 dict_average = 0
+
+phoneme_duration_median = {}
+median_calc = []
 for i in dirs:
     if i.split(".")[1] == "PHN":
         f = open(os.path.join(path,i),"r")
@@ -22,9 +25,11 @@ for i in dirs:
             if phoneme not in phoneme_duration.keys():
                 phoneme_duration[phoneme] = []
                 phoneme_duration_STD[phoneme] = []
+                phoneme_duration_median[phoneme] = []
             else:
                 phoneme_duration[phoneme].append(end_time-start_time)
                 phoneme_duration_STD[phoneme].append(end_time-start_time)
+                phoneme_duration_median[phoneme].append(end_time-start_time)
             duration.append(end_time-start_time)
 
             if i == len(rows)-1:
@@ -38,8 +43,15 @@ dict_average = somma/len(phoneme_duration)
 for e in phoneme_duration_STD:
     std_temp = np.std(np.array(phoneme_duration_STD[e]))
     deviations.append([int(std_temp)])
+    
+    mediana = np.median(np.array(phoneme_duration_median[e]))
+    median_calc.append([int(mediana)])
 
-stand_dev_phonems = np.std(np.array(deviations)) 
+
+
+
+stand_dev_phonems = np.std(np.array(deviations))
+final_mediana = np.median(np.array(median_calc))
 # stand_dev_sentences = np.std(np.array(sentence_duration)) 
 
 
@@ -47,3 +59,4 @@ print(f"Durata media pesata in base alla frequenza di ogni fonema: {int(dict_ave
 print(f"Durata media di tutti i fonemi: {int(sum(duration)/len(duration))}")
 print(f"Durata media di tutte le frasi: {int(sum(sentence_duration)/len(sentence_duration))}")
 print(f"Scarto quadratico medio di tutti i fonemi: {int(stand_dev_phonems)}" )
+print(f"Medianda di tutti i fonemi: {int(final_mediana )}" )
