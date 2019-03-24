@@ -102,7 +102,7 @@ if __name__ == '__main__':
 						ff.write(str(quat[i]) + ",")
 				item = item + 1
 
-			x = int(quats_length / N_SPLIT)
+			x = int((n*N_SPLIT) - quats_length)
 			for i in range(x):
 				if i < x-1:
 					ff.write("0,0,0,0 ")
