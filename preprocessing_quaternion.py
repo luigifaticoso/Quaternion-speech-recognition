@@ -37,15 +37,15 @@ if __name__ == '__main__':
 	N_SPLIT = 100
 
 
-	#os.makedirs("Quaternion_" + str(N_SPLIT))
+	os.makedirs("Quaternion_" + str(N_SPLIT))
 	path_to_quats = os.path.abspath("Quaternion_" + str(N_SPLIT))
 
 	path_to_prep_files = os.path.abspath("preprocessed_files")
-	dirs = os.listdir( path_to_prep_files )
+	dir = os.listdir( path_to_prep_files )
 
-	for i in dirs:				# loop su tutti i file *.WAV
-		if i.split(".")[1] == "WAV":
-			f = Sndfile(os.path.join(path_to_prep_files, i), 'r')
+	for file in dir:				# loop su tutti i file *.WAV
+		if file.split(".")[1] == "WAV":
+			f = Sndfile(os.path.join(path_to_prep_files, file), 'r')
 
 			frames = f.nframes
 			samplerate = f.samplerate
@@ -77,28 +77,31 @@ if __name__ == '__main__':
 				grad2f = np.gradient(gradf)[0]
 				mat = np.concatenate((mat, grad2f), axis=1)
 
-			file_to_create = path_to_quats + "/" + i.split(".")[0] + "_processed.data"
+			file_to_create = path_to_quats + "/" + file.split(".")[0] + "_processed.data"
 			ff = open(file_to_create, "w")
 
 			n = 1
+			item = 0
 			quats = make_quaternion(mat)
-			for x in range(len(quats)):
-				if x == N_SPLIT * n:
+			quats_length = len(quats)
+			while (item < quats_length):
+				if item == N_SPLIT * n:
 					ff.write("\n")
 					n = n + 1
-
-				for elem in quats[x]:
-					ff.write(str(elem) + ",")
-				if elem == quats[x][3]:
-					ff.write(" ")
-
-
-			for y in range(N_SPLIT - x):
-				for time in range(quats[y]):
-					if time < len(quats[y]-1):
-							ff.write("0,")
+				quat = quats[item]
+				for i in range(len(quat)):
+					if i == 3:
+						ff.write(str(quat[i]) + " ")
 					else:
-						ff.write("0\n")
+						ff.write(str(quat[i]) + ",")
+				item = item + 1
+
+			x = int(quats_length / N_SPLIT)
+			for i in range(x):
+				if i < x-1:
+					ff.write("0,0,0,0 ")
+				else:
+					ff.write("0,0,0,0")
 
 
 
