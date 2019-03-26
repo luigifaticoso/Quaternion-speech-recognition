@@ -1,9 +1,5 @@
 import os
-
-path = "files_for_neural_gigi"
-preprocessed_path = os.path.abspath(path)
-if not os.path.isdir(preprocessed_path):
-    os.makedirs(preprocessed_path)
+import shutil
 
 phonema_dict = {
 'h#'   : '1,1,1,1 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0',
@@ -69,10 +65,20 @@ phonema_dict = {
 'eng'  : '0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 0,0,0,0 1,1,1,1',
 }
 path_to_preprocess = os.path.abspath('Quaternion_100')
-
 processed_audio_list = os.listdir(path_to_preprocess)
 
+path = "files_for_neural_gigi"
+preprocessed_path = os.path.abspath(path)
+if os.path.isdir(preprocessed_path):
+    shutil.rmtree(preprocessed_path)
+if not os.path.isdir(preprocessed_path):
+    os.makedirs(preprocessed_path)
+
+
+
 for audio in processed_audio_list:
+    file_to_create = os.path.join(preprocessed_path, audio.split(".")[0] +"_processed.data")
+    ff = open(file_to_create, "w")
     # apriamo l'audio processato e mettiamo i quaternioni in una lista
     f = open(os.path.abspath(os.path.join(path_to_preprocess,audio)), "r+")
     rows_quaternion = f.readlines()
@@ -89,10 +95,6 @@ for audio in processed_audio_list:
         stripped_list_row_quaternion[i] = quaternions
         quaternions = []
     
-    print(audio)
-    stripped_list_row_quaternion[0].append(phonema_dict["h#"])
-    print(stripped_list_row_quaternion[0])
-    exit()
     #apro il file PHN associato
     path_to_phn = audio.split("_")[0] +"_"+ audio.split("_")[1] + ".PHN" 
     path_to_phn = os.path.join(os.path.abspath("preprocessed_files"),path_to_phn)
@@ -101,7 +103,7 @@ for audio in processed_audio_list:
     stripped_list_phn = list(map(str.strip, f_phn.readlines()))
 
     sentence_duration = int(stripped_list_phn[len(stripped_list_phn)-1].split(" ")[1])
-    quaternion_index = 1
+    quaternion_index = 0
     last_quat_less = 0
     for phn in stripped_list_phn:
         split_phn = phn.split(" ")
@@ -120,27 +122,25 @@ for audio in processed_audio_list:
 
         while(n_quaternions_phn>0):
 
-            if n_quaternions_phn > row_dimension - last_quat_less:
+            if (n_quaternions_phn > row_dimension - last_quat_less):
                 n_quaternions_phn -= row_dimension - last_quat_less
+                
+                if row_dimension - last_quat_less > 50:
+                    print(f"la riga {quaternion_index} è il fonema {phonema}")
+                    ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
                 last_quat_less = 0
-
-                # TODO: segnare che quella riga è quel phonema
-                # stripped_list_row_quaternion[quaternion_index]
-
-                print(f"la riga {quaternion_index} è il fonema {phonema}")
-                # stripped_list_row_quaternion[quaternion_index].append(phonema_dict[phonema])
                 quaternion_index += 1
 
-            elif n_quaternions_phn > 50:
+            else:
+                if n_quaternions_phn >= 50:
 
-                last_quat_less = n_quaternions_phn
-                n_quaternions_phn -= n_quaternions_phn
-                print(f"la riga {quaternion_index} è il fonema {phonema}")
-
-            elif n_quaternions_phn <= 50:
-                
-                last_quat_less = n_quaternions_phn
-                n_quaternions_phn -= n_quaternions_phn
+                    last_quat_less = n_quaternions_phn
+                    n_quaternions_phn -= n_quaternions_phn
+                    print(f"la riga {quaternion_index} è il fonema {phonema}")
+                    ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                else:
+                    last_quat_less = n_quaternions_phn
+                    n_quaternions_phn -= n_quaternions_phn
     print(audio)
         
             
