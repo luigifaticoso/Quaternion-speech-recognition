@@ -61,3 +61,16 @@ print(f"Durata media di tutti i fonemi: {int(sum(duration)/len(duration))}")
 print(f"Durata media di tutte le frasi: {int(sum(sentence_duration)/len(sentence_duration))}")
 print(f"Scarto quadratico medio di tutti i fonemi: {int(stand_dev_phonems)}" )
 print(f"Medianda di tutti i fonemi: {int(final_mediana )}" )
+
+# Generazioni classi fonemi per dataset_classifier
+for i in range(len(set(phoneme_list))):
+    fonema_class = f"'{phoneme_list[i]}' : '"
+    for j in range(len(set(phoneme_list))):
+        if i == j:
+            fonema_class+="1,1,1,1 "
+        else:
+            fonema_class+="0,0,0,0 "
+    fonema_class+="'"
+    print(fonema_class)
+        
+
