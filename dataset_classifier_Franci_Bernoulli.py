@@ -102,86 +102,80 @@ if __name__ == '__main__':
 
 	dir_name = "Quaternion_" + str(N_SPLIT) + "_Franci"
 	tree = "/home/franci/Desktop/NN/Quaternion-speech-recognition/" + dir_name
-
-    if os.path.isdir(tree):
-        shutil.rmtree(tree)
-
-    os.makedirs(dir_name)
+	if os.path.isdir(tree):
+		shutil.rmtree(tree)
+	
+	os.makedirs(dir_name)
 	path_to_quats = os.path.abspath(dir_name)
 
 	path_to_prep_files = os.path.abspath("preprocessed_files")
 	dir = os.listdir(path_to_prep_files)
-
-    for file in dir:
-        if file.split(".")[1] == "WAV":
-            file_to_create = path_to_quats + "/" + file.split(".")[0] + "_processed.data"
-
-            phn_file_name = file.split(".")[1] + ".PHN"
+	
+	for file in dir:
+		if file.split(".")[1] == "WAV":
+			file_to_create = path_to_quats + "/" + file.split(".")[0] + "_processed.data"
+			phn_file_name = file.split(".")[1] + ".PHN"
 
 			f = Sndfile(os.path.join(path_to_prep_files, file), 'r')
-
-            frames = f.nframes
+			
+			frames = f.nframes
 			samplerate = f.samplerate
 			data = f.read_frames(frames)
 			data = np.asarray(data)
-
-            phn_file = open(phn_file_name, "r")
-            phn_array = phn_file.readlines()
-
-            for elem in phn_array:
-                phn = elem.split("\n")[0].split(" ")
-                start_frame = phn[0]
-                end_frame = phn[1]
-                phoneme = phn[2]
-
-                #calc mfcc
-    			feat_raw,energy = sf.fbank(data[start_frame, end_frame], samplerate,winlen,winstep, nfilt=numfilt)
-    			feat = np.log(feat_raw)
-    			feat = sf.dct(feat, type=2, axis=1, norm='ortho')[:,:numcep]
-    			feat = sf.lifter(feat,L=22)
-    			feat = np.asarray(feat)
-
-    			#calc log energy
-    			log_energy = np.log(energy) #np.log( np.sum(feat_raw**2, axis=1) )
-    			log_energy = log_energy.reshape([log_energy.shape[0],1])
-
-    			mat = ( feat - np.mean(feat, axis=0) ) / (0.5 * np.std(feat, axis=0))
-    			mat = np.concatenate((mat, log_energy), axis=1)
-
-    			#calc first order derivatives
-    			if grad >= 1:
-                    gradf = np.gradient(mat)[0]
-    				mat = np.concatenate((mat, gradf), axis=1)
-
-    			#calc second order derivatives
-    			if grad == 2:
-                    grad2f = np.gradient(gradf)[0]
-    				mat = np.concatenate((mat, grad2f), axis=1)
-
-                #write quaternion values on file
-                ff = open(file_to_create, "a")
-
-                quats = make_quaternion(mat)
-    			quats_length = len(quats)
-                n = 1
-    			item = 0
-    			while (item < quats_length):
-                    if item == N_SPLIT * n:
-                        ff.write(phoneme_dict[phoneme] + "\n")
-    					n = n + 1
-    				quat = quats[item]
-    				for i in range(len(quat)):
-                        if i == 3:
-                            ff.write(str(quat[i]) + " ")
-    					else:
-                            ff.write(str(quat[i]) + ",")
-    				item = item + 1
-
-    			x = int((n*N_SPLIT) - quats_length)
-    			for i in range(x):
-                    if(i < x-1):
-                        ff.write("0,0,0,0 ")
-    				else:
-                        ff.write("0,0,0,0 ")
-                        ff.write(phoneme_dict[phoneme])
-                ff.close()
+			
+			hn_file = open(phn_file_name, "r")
+			phn_array = phn_file.readlines()
+			
+			for elem in phn_array:
+				phn = elem.split("\n")[0].split(" ")
+				start_frame = phn[0]
+				end_frame = phn[1]
+				phoneme = phn[2]
+				#calcola mfcc
+				feat_raw,energy = sf.fbank(data[start_frame, end_frame], samplerate,winlen,winstep, nfilt=numfilt)
+				feat = np.log(feat_raw)
+				feat = sf.dct(feat, type=2, axis=1, norm='ortho')[:,:numcep]
+				feat = sf.lifter(feat,L=22)
+				feat = np.asarray(feat)
+				#calc log energy
+				log_energy = np.log(energy)#np.log( np.sum(feat_raw**2, axis=1) )
+				log_energy = log_energy.reshape([log_energy.shape[0],1])
+				
+				mat = ( feat - np.mean(feat, axis=0) ) / (0.5 * np.std(feat, axis=0))
+				mat = np.concatenate((mat, log_energy), axis=1)
+				
+				if grad >= 1:
+					gradf = np.gradient(mat)[0]
+					mat = np.concatenate((mat, gradf), axis=1)
+					
+				
+				if grad == 2:
+					grad2f = np.gradient(gradf)[0]
+					mat = np.concatenate((mat, grad2f), axis=1)
+					
+				ff = open(file_to_create, "a")
+				
+				quats = make_quaternion(mat)
+				quats_length = len(quats)
+				n = 1
+				item = 0
+				while (item < quats_length):
+					if item == N_SPLIT * n:
+						ff.write(phoneme_dict[phoneme] + "\n")
+						n = n + 1
+					quat = quats[item]
+					for i in range(len(quat)):
+						if i == 3:
+							ff.write(str(quat[i]) + " ")
+						else:
+							ff.write(str(quat[i]) + ",")
+					item = item + 1
+					
+				x = int((n*N_SPLIT) - quats_length)
+				for i in range(x):
+					if(i < x-1):
+						ff.write("0,0,0,0 ")
+					else:
+						ff.write("0,0,0,0 ")
+						ff.write(phoneme_dict[phoneme])
+				ff.close()
