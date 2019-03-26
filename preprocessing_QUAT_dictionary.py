@@ -64,7 +64,7 @@ if __name__ == '__main__':
         print(f'Analizzo la cartella {str(path_dict)}')
         dir_dict = os.listdir(path_to_prep_files + '/' + str(path_dict))
 
-        for file in dir:				# loop su tutti i file *.WAV
+        for file in dir_dict:				# loop su tutti i file *.WAV
             if file.split(".")[1] == "WAV":
                 f = Sndfile(os.path.join(dir_dict, file), 'r')
 
