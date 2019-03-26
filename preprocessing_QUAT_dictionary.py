@@ -45,7 +45,7 @@ if __name__ == '__main__':
 	grad = 2
 
 	#number of elements for each set of quaternions
-	N_SPLIT = 100
+	N_SPLIT = 400
 
 	dir_name = "Quaternion_DICT_" + str(N_SPLIT)
 	tree = "/home/franci/Desktop/NN/Quaternion-speech-recognition/" + dir_name
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 	path_to_quats = os.path.abspath("Quaternion_" + str(N_SPLIT))
 
 	path_to_prep_files = os.path.abspath("preprocessed_files_with_dict")
-	dir = os.listdir( path_to_prep_files )
+	dir = os.listdir(path_to_prep_files)
 
 
     for path_dict in dir:
@@ -104,13 +104,14 @@ if __name__ == '__main__':
                 n = 1
                 item = 0
                 print("Creo il quaternione")
-                quats_dict, quats = make_quaternion(mat)
+                # quats_dict = make_quaternion(mat)
+                quats = make_quaternion(mat)
 
                 print('Appendo la classe del dialetto al quaternione')
-                dictionary = '  ' + dict_list[i]
-                quats_dict.append(dictionary)
+                dictionary = '\t' + dict_list[path_dict]
+                # quats_dict.append(dictionary)
                 
-                quats_length = len(quats_dict)
+                quats_length = len(quats)
 
                 while (item < quats_length):
                     if item == N_SPLIT * n:
