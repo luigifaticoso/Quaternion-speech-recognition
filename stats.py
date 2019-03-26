@@ -55,9 +55,28 @@ stand_dev_phonems = np.std(np.array(deviations))
 final_mediana = np.median(np.array(median_calc))
 # stand_dev_sentences = np.std(np.array(sentence_duration)) 
 
-print(f"Numero di fonemi singoli (senza duplicati) {len(set(phoneme_list))}")
+unique_list = []
+for el in phoneme_list:
+    if el not in unique_list:
+        unique_list.append(el)
+
+print(f"Numero di fonemi singoli (senza duplicati) {len(unique_list)}")
 print(f"Durata media pesata in base alla frequenza di ogni fonema: {int(dict_average)}")
 print(f"Durata media di tutti i fonemi: {int(sum(duration)/len(duration))}")
 print(f"Durata media di tutte le frasi: {int(sum(sentence_duration)/len(sentence_duration))}")
 print(f"Scarto quadratico medio di tutti i fonemi: {int(stand_dev_phonems)}" )
 print(f"Medianda di tutti i fonemi: {int(final_mediana )}" )
+
+# Generazioni classi fonemi per dataset_classifier
+for i in range(len(unique_list)):
+    fonema_class = f"'{unique_list[i]}' : '"
+    for j in range(len(unique_list)):
+        if i == j:
+            fonema_class+="1,1,1,1 "
+        else:
+            fonema_class+="0,0,0,0 "
+    
+    fonema_class+="',"
+    print(fonema_class)
+        
+
