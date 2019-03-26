@@ -70,7 +70,7 @@ for i in range(len(set(phoneme_list))):
             fonema_class+="1,1,1,1 "
         else:
             fonema_class+="0,0,0,0 "
-    fonema_class+="'"
+    fonema_class+=",'"
     print(fonema_class)
         
 
