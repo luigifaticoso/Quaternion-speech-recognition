@@ -74,11 +74,12 @@ if os.path.isdir(preprocessed_path):
 if not os.path.isdir(preprocessed_path):
     os.makedirs(preprocessed_path)
 
+file_to_create = os.path.join(preprocessed_path,"BIG_PEZZO_DI_DATA" + "_processed.data")
+ff = open(file_to_create, "w")
 
 
 for audio in processed_audio_list:
-    file_to_create = os.path.join(preprocessed_path, audio.split(".")[0] +"_processed.data")
-    ff = open(file_to_create, "w")
+    
     # apriamo l'audio processato e mettiamo i quaternioni in una lista
     f = open(os.path.abspath(os.path.join(path_to_preprocess,audio)), "r+")
     rows_quaternion = f.readlines()
