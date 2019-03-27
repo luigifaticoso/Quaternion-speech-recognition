@@ -74,10 +74,21 @@ if os.path.isdir(preprocessed_path):
 if not os.path.isdir(preprocessed_path):
     os.makedirs(preprocessed_path)
 
-file_to_create = os.path.join(preprocessed_path,"BIG_PEZZO_DI_DATA" + "_processed.data")
-ff = open(file_to_create, "w")
+train_file = os.path.join(preprocessed_path,"TRAIN_BIG_PEZZO_DI_DATA" + "_processed.data")
+dev_file = os.path.join(preprocessed_path,"DEV_BIG_PEZZO_DI_DATA" + "_processed.data")
+test_file = os.path.join(preprocessed_path,"TEST_BIG_PEZZO_DI_DATA" + "_processed.data")
+if os.path.isfile(train_file):
+    os.remove(train_file)
+if os.path.isfile(dev_file):
+    os.remove(dev_file)
+if os.path.isfile(test_file):
+    os.remove(test_file)
 
+ff = open(train_file, "w")
+fd = open(dev_file, "w")
+ft = open(test_file, "w")
 
+count = 0 
 for audio in processed_audio_list:
     if audio != ".DS_Store":
         # apriamo l'audio processato e mettiamo i quaternioni in una lista
@@ -129,7 +140,12 @@ for audio in processed_audio_list:
                         
                         if row_dimension - last_quat_less > 50:
                             print(f"la riga {quaternion_index} è il fonema {phonema}")
-                            ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            if count > ((len(processed_audio_list)*90)/100):
+                                fd.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            elif count>((len(processed_audio_list)*70)/100):
+                                ft.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            else:
+                                ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
                         last_quat_less = 0
                         quaternion_index += 1
 
@@ -139,13 +155,20 @@ for audio in processed_audio_list:
                             last_quat_less = n_quaternions_phn
                             n_quaternions_phn -= n_quaternions_phn
                             print(f"la riga {quaternion_index} è il fonema {phonema}")
-                            ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            if count>((len(processed_audio_list)*90)/100):
+                                fd.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+
+                            elif count>((len(processed_audio_list)*70)/100):
+                                ft.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            else:
+                                ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
                         else:
                             last_quat_less = n_quaternions_phn
                             n_quaternions_phn -= n_quaternions_phn
             print(audio)
         else:
             os.remove(os.path.abspath(os.path.join(path_to_preprocess,audio)))
+    count+=1
             
             
 

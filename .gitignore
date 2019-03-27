@@ -2,3 +2,4 @@ TRAIN/
 preprocessed_files/
 TEST/
 Quaternion_*
+.DS_Store
