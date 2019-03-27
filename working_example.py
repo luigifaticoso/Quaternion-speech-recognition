@@ -72,7 +72,7 @@ def getArgParser():
     parser = Ap.ArgumentParser(description='Parameters for the Neural Networks')
     
     parser.add_argument("--lr",             default="0.001",      type=float)
-    parser.add_argument("--model", "--m",   default="QDNN",       type=str,
+    parser.add_argument("--model", "--m",   default="QCNN",       type=str,
             choices=["QCNN", "QDNN", "CNN", "DNN"])
 
     args = parser.parse_args()
