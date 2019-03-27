@@ -3,3 +3,5 @@ preprocessed_files/
 TEST/
 Quaternion_*
 .DS_Store
+.vscode/
+.idea/
