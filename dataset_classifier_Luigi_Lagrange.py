@@ -74,76 +74,102 @@ if os.path.isdir(preprocessed_path):
 if not os.path.isdir(preprocessed_path):
     os.makedirs(preprocessed_path)
 
-file_to_create = os.path.join(preprocessed_path,"BIG_PEZZO_DI_DATA" + "_processed.data")
-ff = open(file_to_create, "w")
+train_file = os.path.join(preprocessed_path,"TRAIN_BIG_PEZZO_DI_DATA" + "_processed.data")
+dev_file = os.path.join(preprocessed_path,"DEV_BIG_PEZZO_DI_DATA" + "_processed.data")
+test_file = os.path.join(preprocessed_path,"TEST_BIG_PEZZO_DI_DATA" + "_processed.data")
+if os.path.isfile(train_file):
+    os.remove(train_file)
+if os.path.isfile(dev_file):
+    os.remove(dev_file)
+if os.path.isfile(test_file):
+    os.remove(test_file)
 
+ff = open(train_file, "w")
+fd = open(dev_file, "w")
+ft = open(test_file, "w")
 
+count = 0 
 for audio in processed_audio_list:
-    
-    # apriamo l'audio processato e mettiamo i quaternioni in una lista
-    f = open(os.path.abspath(os.path.join(path_to_preprocess,audio)), "r+")
-    rows_quaternion = f.readlines()
+    if audio != ".DS_Store":
+        # apriamo l'audio processato e mettiamo i quaternioni in una lista
+        f = open(os.path.abspath(os.path.join(path_to_preprocess,audio)), "r+")
+        rows_quaternion = f.readlines()
 
-    # pulisco i quaternioni rimuovendo i leading e trailing whitespace
-    stripped_list_row_quaternion = list(map(str.strip, rows_quaternion))
+        # pulisco i quaternioni rimuovendo i leading e trailing whitespace
+        stripped_list_row_quaternion = list(map(str.strip, rows_quaternion))
 
-    # Divido i quaternioni in base allo spazio e ho una lista quaternions composta da quaternioni
-    quaternions = []
-    for i in range(len(stripped_list_row_quaternion)):
-        array_tmp = stripped_list_row_quaternion[i].split(" ")
-        for e in array_tmp:
-            quaternions.append(e)
-        stripped_list_row_quaternion[i] = quaternions
+        # Divido i quaternioni in base allo spazio e ho una lista quaternions composta da quaternioni
         quaternions = []
-    
-    #apro il file PHN associato
-    path_to_phn = audio.split("_")[0] +"_"+ audio.split("_")[1] + ".PHN" 
-    path_to_phn = os.path.join(os.path.abspath("preprocessed_files"),path_to_phn)
-
-    f_phn = open(path_to_phn,'r')
-    stripped_list_phn = list(map(str.strip, f_phn.readlines()))
-
-    sentence_duration = int(stripped_list_phn[len(stripped_list_phn)-1].split(" ")[1])
-    quaternion_index = 0
-    last_quat_less = 0
-    for phn in stripped_list_phn:
-        split_phn = phn.split(" ")
-        start_time = split_phn[0]
-        end_time = split_phn[1]
-        phonema = split_phn[2]
-        duration = int(end_time) - int(start_time)
+        for i in range(len(stripped_list_row_quaternion)):
+            array_tmp = stripped_list_row_quaternion[i].split(" ")
+            for e in array_tmp:
+                quaternions.append(e)
+            stripped_list_row_quaternion[i] = quaternions
+            quaternions = []
         
-        ratio_duration = sentence_duration/duration
-        percentage_phn_duration = 100/ratio_duration
+        #apro il file PHN associato
+        path_to_phn = audio.split("_")[0] +"_"+ audio.split("_")[1] + ".PHN"
+        path_to_phn = os.path.join(os.path.abspath("preprocessed_files"),path_to_phn)
 
-        #ora vado a trovare la percentuale di quel fonema in termini di quaternioni
-        row_dimension = len(stripped_list_row_quaternion[0])
-        len_audio_quaternion = len(stripped_list_row_quaternion) * row_dimension
-        n_quaternions_phn = int((len_audio_quaternion * percentage_phn_duration)/100)
+        if os.path.isfile(path_to_phn):
+            f_phn = open(path_to_phn,'r')
+            stripped_list_phn = list(map(str.strip, f_phn.readlines()))
 
-        while(n_quaternions_phn>0):
-
-            if (n_quaternions_phn > row_dimension - last_quat_less):
-                n_quaternions_phn -= row_dimension - last_quat_less
+            sentence_duration = int(stripped_list_phn[len(stripped_list_phn)-1].split(" ")[1])
+            quaternion_index = 0
+            last_quat_less = 0
+            for phn in stripped_list_phn:
+                split_phn = phn.split(" ")
+                start_time = split_phn[0]
+                end_time = split_phn[1]
+                phonema = split_phn[2]
+                duration = int(end_time) - int(start_time)
                 
-                if row_dimension - last_quat_less > 50:
-                    print(f"la riga {quaternion_index} è il fonema {phonema}")
-                    ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
-                last_quat_less = 0
-                quaternion_index += 1
+                ratio_duration = sentence_duration/duration
+                percentage_phn_duration = 100/ratio_duration
 
-            else:
-                if n_quaternions_phn >= 50:
+                #ora vado a trovare la percentuale di quel fonema in termini di quaternioni
+                row_dimension = len(stripped_list_row_quaternion[0])
+                len_audio_quaternion = len(stripped_list_row_quaternion) * row_dimension
+                n_quaternions_phn = int((len_audio_quaternion * percentage_phn_duration)/100)
 
-                    last_quat_less = n_quaternions_phn
-                    n_quaternions_phn -= n_quaternions_phn
-                    print(f"la riga {quaternion_index} è il fonema {phonema}")
-                    ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
-                else:
-                    last_quat_less = n_quaternions_phn
-                    n_quaternions_phn -= n_quaternions_phn
-    print(audio)
-        
+                while(n_quaternions_phn>0):
+
+                    if (n_quaternions_phn > row_dimension - last_quat_less):
+                        n_quaternions_phn -= row_dimension - last_quat_less
+                        
+                        if row_dimension - last_quat_less > 50:
+                            print(f"la riga {quaternion_index} è il fonema {phonema}")
+                            if count > ((len(processed_audio_list)*90)/100):
+                                fd.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            elif count>((len(processed_audio_list)*70)/100):
+                                ft.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            else:
+                                ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                        last_quat_less = 0
+                        quaternion_index += 1
+
+                    else:
+                        if n_quaternions_phn >= 50:
+
+                            last_quat_less = n_quaternions_phn
+                            n_quaternions_phn -= n_quaternions_phn
+                            print(f"la riga {quaternion_index} è il fonema {phonema}")
+                            if count>((len(processed_audio_list)*90)/100):
+                                fd.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+
+                            elif count>((len(processed_audio_list)*70)/100):
+                                ft.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                            else:
+                                ff.write(str(rows_quaternion[quaternion_index]).strip()+"\t"+phonema_dict[phonema]+'\n')
+                        else:
+                            last_quat_less = n_quaternions_phn
+                            n_quaternions_phn -= n_quaternions_phn
+            print(audio)
+        else:
+            os.remove(os.path.abspath(os.path.join(path_to_preprocess,audio)))
+    count+=1
+            
             
 
 
