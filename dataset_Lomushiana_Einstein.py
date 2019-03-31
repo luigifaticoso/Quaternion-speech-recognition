@@ -317,7 +317,7 @@ if __name__ == '__main__':
                 quats_length = len(quats)
                 count += 1
                 print('Quantita file nella cartella ' + path_dict + ': ' + str(len(dir_dict)) + ' '+ str(count))
-                if count > ((len(dir_dict)*90)/100):
+                if count > (((len(dir_dict)/4)*90)/100):
                   print("Creo DEV_FILE "+ str(count))
                   while (item < quats_length):
                     if item == N_SPLIT * n:
@@ -337,7 +337,7 @@ if __name__ == '__main__':
                           fd.write("0,0,0,0 ")
                       else:
                           fd.write("0,0,0,0")
-                elif count>((len(dir_dict)*70)/100):
+                elif count>(((len(dir_dict)/4)*70)/100):
                   print("Creo TEST_FILE " + str(count))
                   while (item < quats_length):
                         if item == N_SPLIT * n:
