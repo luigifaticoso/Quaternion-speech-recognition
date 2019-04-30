@@ -125,15 +125,31 @@ print(classifier.summary())
 #
 # Training
 #
+path = "./logging"
+cbk = keras.callbacks.TensorBoard(path)
+
+# Save Model
+filepath = path + "/saved-model-{epoch:02d}-{val_acc:.2f}.hdf5"
+checkpoint = keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', save_best_only=True, save_weights_only=False, mode='auto', period=1)
+
+print("\nStarting training...")
 classifier.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 classifier.fit(x_train, y_train,
                 validation_data=(x_dev,y_dev),
                 epochs=15,
                 batch_size=15)
 
+print("Training complete.\n")
+
+# Save Path
+classifier.save(path + "/saved_model.h5")
+print("Saved model to disk")
+
 #
 # Eval.
 #
+print("\nEvaluating test...")
 loss, acc = classifier.evaluate(x_test,y_test)
+
 print('Test Loss = '+str(loss)+' | Test accuracy = '+str(acc))
 print("That's All Folks :p ")
