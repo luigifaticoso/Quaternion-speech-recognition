@@ -21,7 +21,7 @@
 
 # def dataPrepDecodaQuaternion(filename, isquat=True):
 
-#     nbTopics         = 250
+#     nbTopics         = 150
 #     quaternionFactor = 4
 #     realChannel      = 3
 #     nbClasses        = 8
@@ -181,7 +181,7 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 def dataPrepDecodaQuaternion(filename, isquat=True):
 
-    nbTopics         = 250
+    nbTopics         = 150
     quaternionFactor = 4
     realChannel      = 3
     nbClasses        = 8
@@ -293,12 +293,12 @@ cbk = keras.callbacks.TensorBoard(log_dir=path, histogram_freq=0,
 filepath = path + "/saved-model-{epoch:02d}-{val_acc:.2f}.hdf5"
 checkpoint = keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
-print("\nStarting training... Batch_size = 15 - Epoch: 15\n")
+print("\nStarting training... Batch_size = 3 - Epoch: 15\n")
 classifier.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 classifier.fit(x_train, y_train,
                 validation_data=(x_dev,y_dev),
-                epochs=20,
-                batch_size=15,
+                epochs=15,
+                batch_size=3,
                 callbacks=[cbk])
 
 print("Training complete.\n")

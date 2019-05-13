@@ -19,7 +19,7 @@ def CNN(params):
 
     if(params.model == 'QCNN'):
 
-        input_seq = Input((250,4))
+        input_seq = Input((150,4))
         
         # Conv
         conv    = QuaternionConv1D(32, 3, strides=1, activation='relu', padding="same")(input_seq)
@@ -33,7 +33,7 @@ def CNN(params):
     
     else:
    
-        input_seq = Input((250,3))
+        input_seq = Input((150,3))
         # Conv
         conv    = Conv1D(32, 3, strides=1, activation='relu', padding="same")(input_seq)
         pool    = AveragePooling1D(2, padding='same')(conv)
@@ -55,7 +55,7 @@ def DNN(params):
 
     if(params.model == 'DNN'):
         
-        input_seq = Input((250,3))
+        input_seq = Input((150,3))
         
         I = Flatten()(input_seq)
         
@@ -66,7 +66,7 @@ def DNN(params):
         h2 = Dense(512, activation='relu')(d1)
     elif(params.model == 'QDNN'):
         
-        input_seq = Input((250,4))
+        input_seq = Input((150,4))
         
         I = Flatten()(input_seq)
         
